@@ -1,19 +1,40 @@
 package de.julianweinelt.caesar.storage.providers;
 
+import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.Storage;
 import org.bukkit.Bukkit;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class MySQL extends Storage {
+    private final Logger log = CaesarConnector.getInstance().getLogger();
+
     @Override
     public void connect() {
+        final String DRIVER = "com.mysql.cj.jdbc.Driver";
+        final String PARAMETERS = "?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        final String URL = "jdbc:mysql://" + LocalStorage.getInstance().getData().getDatabaseHost()
+                + ":" + LocalStorage.getInstance().getData().getDatabasePort() + "/" +
+                LocalStorage.getInstance().getData().getDatabaseName() + PARAMETERS;
+        final String USER = LocalStorage.getInstance().getData().getDatabaseUser();
+        final String PASSWORD = LocalStorage.getInstance().getData().getDatabasePassword();
 
+        try {
+            Class.forName(DRIVER);
+
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            log.info("Connected to MySQL database: " + URL);
+            conn.createStatement().execute("USE " + LocalStorage.getInstance().getData().getDatabaseName());
+        } catch (Exception e) {
+            log.severe("Failed to connect to MySQL database: " + e.getMessage());
+        }
     }
 
     @Override
