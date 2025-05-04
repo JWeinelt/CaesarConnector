@@ -3,6 +3,7 @@ package de.julianweinelt.caesar.commands;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.storage.LocalStorage;
+import de.julianweinelt.caesar.storage.StorageFactory;
 import de.julianweinelt.caesar.storage.StorageType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -52,6 +53,11 @@ public class CaesarCommand implements CommandExecutor {
                 s.getData().setStorageType(type);
                 s.saveData();
                 sender.sendMessage("§aDatabase settings saved.");
+                sender.sendMessage("§aRestarting database now...");
+                StorageFactory.getInstance().getStorage().disconnect();
+                StorageFactory.getInstance().createStorage();
+                StorageFactory.getInstance().getStorage().connect();
+                sender.sendMessage("§aDatabase restarted.");
             }
         }
         return false;
