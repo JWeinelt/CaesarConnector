@@ -23,6 +23,10 @@ public class LocalStorage {
         return CaesarConnector.getInstance().getStorage();
     }
 
+    public LocalStorage() {
+        CaesarConnector.getInstance().getDataFolder().mkdir();
+    }
+
     public void loadData() {
         log.info("Loading local storage...");
         if (!configFile.exists()) saveData();
