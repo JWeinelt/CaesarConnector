@@ -1,29 +1,28 @@
 package de.julianweinelt.caesar;
 
+import com.google.common.collect.Iterables;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import de.julianweinelt.caesar.commands.CaesarCommand;
 import de.julianweinelt.caesar.commands.CaesarCompleter;
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.feature.FeatureRegistry;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.StorageFactory;
-import eu.cloudnetservice.driver.CloudNetVersion;
-import eu.cloudnetservice.driver.DriverEnvironment;
-import eu.cloudnetservice.driver.inject.InjectionLayer;
-import eu.cloudnetservice.driver.provider.CloudServiceFactory;
-import eu.cloudnetservice.driver.provider.CloudServiceProvider;
-import eu.cloudnetservice.driver.registry.ServiceRegistry;
-import eu.cloudnetservice.driver.service.ServiceEnvironment;
-import eu.cloudnetservice.driver.service.ServiceInfoSnapshot;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class CaesarConnector extends JavaPlugin {
+public class CaesarConnector extends JavaPlugin implements PluginMessageListener {
     private Logger log;
 
     @Getter
@@ -69,10 +68,6 @@ public class CaesarConnector extends JavaPlugin {
         log.info("Checking for CloudNET");
         boolean cloudnet = Bukkit.getPluginManager().getPlugin("CloudNet-Bridge") != null;
         if (cloudnet) {
-            ServiceInfoSnapshot snapshot = InjectionLayer.ext().instance(ServiceInfoSnapshot.class);
-            if (snapshot != null) {
-                storage.getData().setServerName(snapshot.name());
-            }
             link = new CaesarLink(URI.create(storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort()));
         } else {
             log.info("CloudNet not found. Running in standalone mode.");
@@ -95,10 +90,17 @@ public class CaesarConnector extends JavaPlugin {
                 storageFactory.getStorage().sendServerData(), 0, 20 * 60 * 5);
         featureRegistry = new FeatureRegistry();
         featureRegistry.registerPermissions();
+
+        log.info("Registering to Proxy communication...");
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
     }
 
     @Override
     public void onDisable() {
+        log.info("Unregistering from Proxy communication...");
+        this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+        this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
         log.info("Stopping system usage analyzer...");
         storageFactory.getStorage().sendServerData();
         storageFactory.getStorage().disconnect();
@@ -106,5 +108,34 @@ public class CaesarConnector extends JavaPlugin {
         link.close();
         log.info("CaesarConnector has been shut down.");
         log.info("Goodbye!");
+    }
+
+
+    @Override
+    public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] message) {
+        if (!channel.equals("BungeeCord")) {
+            return;
+        }
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        String subchannel = in.readUTF();
+        if (subchannel.equals("GetServer")) {
+            String servername = in.readUTF();
+            log.info("CaesarConnector received server name from BungeeCord: " + servername);
+            storage.getData().setServerName(servername);
+            storage.saveData();
+            log.info("Server name saved.");
+        }
+    }
+
+    public void getServername() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("GetServer");
+
+        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+        if (player == null) {
+            log.warning("No players online. Can't get server name.");
+            return;
+        }
+        player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 }
