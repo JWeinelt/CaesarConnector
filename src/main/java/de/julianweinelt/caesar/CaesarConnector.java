@@ -68,15 +68,17 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         log.info("Checking for CloudNET");
         boolean cloudnet = Bukkit.getPluginManager().getPlugin("CloudNet-Bridge") != null;
         if (cloudnet) {
+            log.info("Trying to link to Caesar...");
             link = new CaesarLink(URI.create(storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort()));
         } else {
             log.info("CloudNet not found. Running in standalone mode.");
             log.info("Using " + storage.getData().getServerName() + " as server name.");
             standalone = true;
 
+            log.info("Trying to link to Caesar...");
             Map<String, String> headers = new HashMap<>();
             headers.put("ConnectionKey", storage.getData().getConnectionKey());
-            link = new CaesarLink(URI.create(storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort()),
+            link = new CaesarLink(URI.create("ws://" + storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort()),
                     headers);
             link.connect();
         }
@@ -84,7 +86,6 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         getCommand("caesar").setExecutor(new CaesarCommand());
         getCommand("caesar").setTabCompleter(new CaesarCompleter());
 
-        log.info("Trying to link to Caesar...");
         log.info("Starting system usage analyzer...");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () ->
                 storageFactory.getStorage().sendServerData(), 0, 20 * 60 * 5);
