@@ -12,11 +12,15 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 public class CaesarLink extends WebSocketClient {
 
     private final Logger log = CaesarConnector.getInstance().getLogger();
+
+    private ScheduledExecutorService schedulerRestart = Executors.newScheduledThreadPool(1);
 
     @Getter
     private String serverVersion;
@@ -35,6 +39,7 @@ public class CaesarLink extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
+        schedulerRestart.shutdown();
         log.info("Connection has been opened.");
         log.info("Sending handshake...");
         sendHandshake();
@@ -67,6 +72,11 @@ public class CaesarLink extends WebSocketClient {
     @Override
     public void onClose(int i, String s, boolean b) {
         log.info("Connection has been closed. Reason: " + s + ", Code: " + i);
+        if (b) {
+            log.info("Remote host closed connection.");
+            schedulerRestart = Executors.newScheduledThreadPool(1);
+            schedulerRestart.scheduleAtFixedRate(this::reconnect, 10, 30, java.util.concurrent.TimeUnit.SECONDS);
+        }
     }
 
     @Override
