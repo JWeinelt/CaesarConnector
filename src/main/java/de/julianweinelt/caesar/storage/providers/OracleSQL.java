@@ -12,4 +12,8 @@ public class OracleSQL extends Storage {
     public void disconnect() {
 
     }
+    @Override
+    public void sendServerData() {
+
+    }
 }

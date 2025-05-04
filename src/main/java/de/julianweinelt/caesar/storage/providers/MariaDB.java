@@ -12,4 +12,9 @@ public class MariaDB extends Storage {
     public void disconnect() {
 
     }
+
+    @Override
+    public void sendServerData() {
+
+    }
 }

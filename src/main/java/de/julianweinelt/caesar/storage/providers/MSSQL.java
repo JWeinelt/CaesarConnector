@@ -12,4 +12,8 @@ public class MSSQL extends Storage {
     public void disconnect() {
 
     }
+    @Override
+    public void sendServerData() {
+
+    }
 }
