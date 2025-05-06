@@ -89,7 +89,7 @@
         <dependency>
             <groupId>de.codeblocksmc.codelib</groupId>
             <artifactId>CodeLib</artifactId>
-            <version>LATEST</version>
+            <version>3.3.1</version>
         </dependency>
 
         <dependency>
