@@ -31,7 +31,7 @@ If you want to find plugins and/or extensions, head to the [Caesar plugin market
 - An internet connection (recommended)
 - Caesar not running on SQLite or H2
 
-> [!INFO]
+> [!WARNING]
 > These database engines are not recommended for production environments and may cause data inconsistency.
 
 ### Getting started
