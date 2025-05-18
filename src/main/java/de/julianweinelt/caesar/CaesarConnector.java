@@ -4,10 +4,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import de.julianweinelt.caesar.extensions.ExtensionLoader;
 import de.julianweinelt.caesar.commands.CaesarCommand;
 import de.julianweinelt.caesar.commands.CaesarCompleter;
 import de.julianweinelt.caesar.connection.CaesarLink;
-import de.julianweinelt.caesar.feature.FeatureRegistry;
+import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.StorageFactory;
 import lombok.Getter;
@@ -40,7 +41,10 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
     private StorageFactory storageFactory;
 
     @Getter
-    private FeatureRegistry featureRegistry;
+    private Registry featureRegistry;
+
+    @Getter
+    private ExtensionLoader extensionLoader;
 
     @Override
     public void onLoad() {
@@ -89,12 +93,21 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         log.info("Starting system usage analyzer...");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () ->
                 storageFactory.getStorage().sendServerData(), 0, 20 * 60 * 5);
-        featureRegistry = new FeatureRegistry();
+        featureRegistry = new Registry();
         featureRegistry.registerPermissions();
 
         log.info("Registering to Proxy communication...");
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+
+        log.info("Starting Caesar Extension Loader...");
+        extensionLoader = new ExtensionLoader();
+        log.info("Loading Caesar Extensions...");
+        extensionLoader.prepareLoading();
+        extensionLoader.loadExtensions();
+        log.info("Caesar Extensions loaded.");
+        log.info("CaesarConnector has been enabled.");
+        log.info("Thanks for using!");
     }
 
     @Override
@@ -107,6 +120,7 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         storageFactory.getStorage().disconnect();
         log.info("Shutting down CaesarConnector");
         link.close();
+        if (!extensionLoader != null) extensionLoader.
         log.info("CaesarConnector has been shut down.");
         log.info("Goodbye!");
     }
