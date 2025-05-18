@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.feature.Feature;
-import de.julianweinelt.caesar.feature.FeatureRegistry;
+import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import lombok.Getter;
 import org.java_websocket.client.WebSocketClient;
@@ -61,7 +61,7 @@ public class CaesarLink extends WebSocketClient {
                     break;
                 case TRANSFER_CONFIG:
                     log.info("Received configuration from Caesar.");
-                    if (root.get("useReports").getAsBoolean()) FeatureRegistry.instance()
+                    if (root.get("useReports").getAsBoolean()) Registry.instance()
                             .registerFeature(Feature.REPORT_SYSTEM);
                     log.info("Configuration transfer complete.");
                     break;

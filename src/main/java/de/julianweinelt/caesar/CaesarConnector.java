@@ -120,7 +120,8 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         storageFactory.getStorage().disconnect();
         log.info("Shutting down CaesarConnector");
         link.close();
-        if (!extensionLoader != null) extensionLoader.
+        log.info("Disabling Caesar Extensions...");
+        if (extensionLoader != null) extensionLoader.disableExtensions();
         log.info("CaesarConnector has been shut down.");
         log.info("Goodbye!");
     }

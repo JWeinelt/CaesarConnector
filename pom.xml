@@ -62,6 +62,11 @@
             <name>Unified Vision Repo</name>
             <url>https://repo.codeblocksmc.de/releases</url>
         </repository>
+        <repository>
+            <id>unifiedvision-caesar</id>
+            <name>Unified Vision Repo</name>
+            <url>https://repo.codeblocksmc.de/caesar</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -90,6 +95,12 @@
             <groupId>de.codeblocksmc.codelib</groupId>
             <artifactId>CodeLib</artifactId>
             <version>3.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.julianweinelt.caesar</groupId>
+            <artifactId>CaesarMC</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
