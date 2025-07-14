@@ -1,7 +1,5 @@
 package de.julianweinelt.caesar.commands;
 
-import de.julianweinelt.caesar.Caesar;
-import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.feature.Feature;
 import de.julianweinelt.caesar.feature.Registry;
@@ -14,9 +12,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-
-import java.security.SecureRandom;
-import java.util.Base64;
 
 public class CaesarCommand implements CommandExecutor {
     @Override
