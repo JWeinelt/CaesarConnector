@@ -9,7 +9,7 @@ import java.util.UUID;
 @Setter
 public class Configuration {
     private String caesarHost = "localhost";
-    private int caesarPort = 49850;
+    private int caesarPort = 48002;
 
 
     private String databaseHost = "localhost";
