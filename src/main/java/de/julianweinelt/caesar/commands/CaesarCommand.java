@@ -2,13 +2,20 @@ package de.julianweinelt.caesar.commands;
 
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.connection.CaesarLink;
+import de.julianweinelt.caesar.feature.Feature;
+import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.StorageFactory;
 import de.julianweinelt.caesar.storage.StorageType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public class CaesarCommand implements CommandExecutor {
     @Override
@@ -20,6 +27,13 @@ public class CaesarCommand implements CommandExecutor {
             if (CaesarLink.getInstance().isOpen()) status = "§a✔ Connected";
             else status = "§c❌ Disconnected";
             sender.sendMessage("§eStatus: " + status);
+            sender.sendMessage("§eReports: " + ((Registry.instance().featureActive(Feature.REPORT_SYSTEM)) ? "§a✔ Active" : "§c❌ Not active"));
+            sender.sendMessage("§ePunishments: " + ((Registry.instance().featureActive(Feature.BAN_SYSTEM)) ? "§a✔ Active" : "§c❌ Not active"));
+            sender.sendMessage(
+                    Component.text("§eExtensions loaded: ").append(Component.text("⍰")
+                            .hoverEvent(HoverEvent.showText(Component.text("§aExtensions are Caesar plugins that are compatible with Minecraft."))))
+                            .append(Component.text("§a" + Registry.instance().getPlugins().size()))
+            );
             return false;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("setup")) {
@@ -27,10 +41,15 @@ public class CaesarCommand implements CommandExecutor {
                 sender.sendMessage("§c/caesar setup db <type> <host> <port> <database> <user> <password>");
                 return false;
             }
-        } else if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
-                String key = args[2];
-                LocalStorage.getInstance().getData().setConnectionKey(key);
+        } else if (args.length == 2) {
+             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("generate-key")) {
+                 byte[] key = new byte[32]; // 256 bits
+                 SecureRandom random = new SecureRandom();
+                 random.nextBytes(key);
+
+                 String base64Key = Base64.getEncoder().encodeToString(key);
+
+                LocalStorage.getInstance().getData().setConnectionKey(base64Key);
                 sender.sendMessage("§aConnection key set.");
                 sender.sendMessage("§aRestarting CaesarLink...");
                 CaesarLink.getInstance().close();
