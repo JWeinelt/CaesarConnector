@@ -139,6 +139,7 @@ public class CaesarLink extends WebSocketClient {
                     JsonObject o = new JsonObject();
                     o.addProperty("action", LinkAction.SERVER_INFO.toString());
                     o.addProperty("server", CaesarConnector.getInstance().getName());
+                    o.addProperty("serverId", LocalStorage.getInstance().getData().getServerId().toString());
                     o.addProperty("serverVersion", serverVersion);
                     o.addProperty("maxPlayers", Bukkit.getMaxPlayers());
                     o.addProperty("onlinePlayers",  Bukkit.getOnlinePlayers().size());
