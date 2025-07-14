@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 public class CaesarConnector extends JavaPlugin implements PluginMessageListener {
     private Logger log;
 
+    public static String prefix = "§x§5§4§D§A§F§4C§x§5§4§C§1§E§8a§x§5§4§A§8§D§Be§x§5§4§9§0§C§Fs§x§5§4§7§7§C§2a§x§5§4§5§E§B§6r §7| ";
+
     @Getter
     private static CaesarConnector instance;
     private static final String linkVersion = "1.0.1";
@@ -80,7 +82,11 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
         boolean cloudnet = Bukkit.getPluginManager().getPlugin("CloudNet-Bridge") != null;
         if (cloudnet) {
             log.info("Trying to link to Caesar...");
-            link = new CaesarLink(URI.create(storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort()));
+            link = new CaesarLink(
+                    URI.create("ws://" + storage.getData().getCaesarHost() + ":" + storage.getData().getCaesarPort())
+            );
+            link.connect();
+            log.info("CaesarLink connected.");
         } else {
             log.info("CloudNet not found. Running in standalone mode.");
             log.info("Using " + storage.getData().getServerName() + " as server name.");
