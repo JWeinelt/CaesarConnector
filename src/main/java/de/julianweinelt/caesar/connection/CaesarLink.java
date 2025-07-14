@@ -1,5 +1,6 @@
 package de.julianweinelt.caesar.connection;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.julianweinelt.caesar.CaesarConnector;
@@ -10,6 +11,7 @@ import de.julianweinelt.caesar.reports.ReportView;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -133,6 +135,28 @@ public class CaesarLink extends WebSocketClient {
                     String command = root.get("command").getAsString();
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     break;
+                case SERVER_INFO:
+                    JsonObject o = new JsonObject();
+                    o.addProperty("action", LinkAction.SERVER_INFO.toString());
+                    o.addProperty("server", CaesarConnector.getInstance().getName());
+                    o.addProperty("serverVersion", serverVersion);
+                    o.addProperty("maxPlayers", Bukkit.getMaxPlayers());
+                    o.addProperty("onlinePlayers",  Bukkit.getOnlinePlayers().size());
+                    JsonObject b = new JsonObject();
+                    b.addProperty("bukkitVersion", Bukkit.getBukkitVersion());
+                    b.addProperty("allowEnd", Bukkit.getAllowEnd());
+                    b.addProperty("allowNether", Bukkit.getAllowNether());
+                    b.addProperty("minecraftVersion", Bukkit.getMinecraftVersion());
+                    b.addProperty("whitelist", Bukkit.hasWhitelist());
+                    o.add("bukkit", b);
+                    JsonArray plugins = new JsonArray();
+                    for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
+                        plugins.add(p.getName());
+                    }
+                    o.add("plugins", plugins);
+                    o.addProperty("hasPlugman", Bukkit.getPluginManager().isPluginEnabled("PlugmanX"));
+
+                    send(o.toString());
             }
         }
     }
@@ -258,10 +282,12 @@ public class CaesarLink extends WebSocketClient {
         SERVER_STOP,
         SERVER_EXECUTE_COMMAND,
         SERVER_SHOW_CONSOLE,
+        SERVER_INFO,
         PLAYER_KICK,
         PLAYER_WARN,
         PLAYER_BAN,
         PLAYER_INFO,
+        PLAYER_LIST,
         PLAYER_REPORT,
         REPORT_CREATE,
         REPORT_UPDATE,
