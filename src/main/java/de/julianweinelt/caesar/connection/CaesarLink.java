@@ -259,5 +259,13 @@ public class CaesarLink extends WebSocketClient {
         SERVER_STOP,
         SERVER_EXECUTE_COMMAND,
         SERVER_SHOW_CONSOLE,
+        PLAYER_KICK,
+        PLAYER_WARN,
+        PLAYER_BAN,
+        PLAYER_INFO,
+        PLAYER_REPORT,
+        REPORT_CREATE,
+        REPORT_UPDATE,
+        REPORT_DELETE,
     }
 }
