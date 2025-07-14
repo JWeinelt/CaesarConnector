@@ -30,6 +30,7 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
 
     @Getter
     private static CaesarConnector instance;
+    private static final String linkVersion = "1.0.1";
 
     @Getter
     private boolean standalone = false;

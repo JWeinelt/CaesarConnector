@@ -1,9 +1,14 @@
 name: CaesarConnector
 main: de.julianweinelt.caesar.CaesarConnector
+description: CaesarLink plugin to connect your server to your Caesar Backend
 version: 1.0.1
 api-version: 1.13
 author: Julian Weinelt
 website: https://caesarnet.cloud
+database: true
+load: STARTUP
+prefix: Caesar
+
 
 softdepend:
   - PlaceholderAPI
