@@ -129,6 +129,8 @@ public class CaesarLink extends WebSocketClient {
                     Bukkit.getScheduler().runTask(CaesarConnector.getInstance(), () -> Bukkit.spigot().restart());
                     break;
                 case SERVER_EXECUTE_COMMAND:
+                    String command = root.get("command").getAsString();
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     break;
             }
         }
