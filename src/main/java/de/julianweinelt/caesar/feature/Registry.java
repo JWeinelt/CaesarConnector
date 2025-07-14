@@ -33,6 +33,7 @@ public class Registry {
                 CaesarConnector.getInstance().getServer().getCommandMap().register("report",
                         new ReportCommand("report").setAliases(List.of("reports")));
                 CaesarConnector.getInstance().setReportManager(new ReportManager());
+                features.add(Feature.REPORT_SYSTEM);
                 log.info("Registered command: /report");
                 break;
             case BAN_SYSTEM:
