@@ -103,6 +103,9 @@ public class CaesarLink extends WebSocketClient {
                 case PONG:
                     pingLatch.countDown();
                     break;
+                case PING:
+                    sendPong();
+                    break;
                 case SERVER_SHOW_CONSOLE:
                     boolean stream =  root.get("stream").getAsBoolean();
                     if (stream) {
@@ -123,6 +126,9 @@ public class CaesarLink extends WebSocketClient {
                     Bukkit.getScheduler().runTask(CaesarConnector.getInstance(), Bukkit::shutdown);
                     break;
                 case SERVER_RESTART:
+                    Bukkit.getScheduler().runTask(CaesarConnector.getInstance(), () -> Bukkit.spigot().restart());
+                    break;
+                case SERVER_EXECUTE_COMMAND:
                     break;
             }
         }
@@ -170,6 +176,12 @@ public class CaesarLink extends WebSocketClient {
             } else return -2;
         } catch (InterruptedException ignored) {}
         return -1;
+    }
+
+    private void sendPong() {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PONG.name());
+        send(o.toString());
     }
 
     public void sendHandshake() {
