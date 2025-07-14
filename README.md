@@ -69,9 +69,9 @@ This project is licensed under [GNU GPL v3 License](https://www.gnu.org/licenses
 
 ## 🧭 Road map
 
-- [ ] Report system with GUIs
+- [X] Report system with GUIs
 - [ ] Punishment system
-- [ ] Live console
+- [X] Live console
 - [ ] Hook into CloudNET API (new branch)
 - [ ] Integrate Spark, LuckPerms, etc.
 
