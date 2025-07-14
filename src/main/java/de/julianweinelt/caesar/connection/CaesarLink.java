@@ -10,6 +10,8 @@ import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.reports.ReportView;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import lombok.Getter;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.java_websocket.client.WebSocketClient;
@@ -88,6 +90,11 @@ public class CaesarLink extends WebSocketClient {
                     serverVersion = root.get("serverVersion").getAsString();
                     useEncryptedConnection = root.get("useEncryptedConnection").getAsBoolean();
                     log.info("Server version: " + serverVersion);
+                    Bukkit.getOnlinePlayers().forEach(player -> {
+                        if (player.isOp()) {
+                            Audience.audience(player).sendActionBar(Component.text("§aCaesar is back online!"));
+                        }
+                    });
                     break;
                 case DISCONNECT:
                     log.info("Received disconnect from Caesar.");
@@ -99,6 +106,7 @@ public class CaesarLink extends WebSocketClient {
                         ReportManager.instance().setView(new ReportView()
                                 .prepare(root.get("reports").getAsJsonObject())
                         );
+                        Bukkit.getPluginManager().registerEvents(ReportView.instance(), CaesarConnector.getInstance());
                         log.info("Report system feature has been registered.");
                     }
                     log.info("Configuration transfer complete.");
@@ -119,7 +127,7 @@ public class CaesarLink extends WebSocketClient {
                             response.addProperty("action", "CONSOLE_OUTPUT_LIVE");
                             response.addProperty("line", line);
                             response.addProperty("server", CaesarConnector.getInstance().getName());
-                            send(response.toString());
+                            sendE(response.toString());
                         });
                     } else {
                         consoleHandler.setLive(false, null);
@@ -157,7 +165,7 @@ public class CaesarLink extends WebSocketClient {
                     o.add("plugins", plugins);
                     o.addProperty("hasPlugman", Bukkit.getPluginManager().isPluginEnabled("PlugmanX"));
 
-                    send(o.toString());
+                    sendE(o.toString());
             }
         }
     }
@@ -167,6 +175,11 @@ public class CaesarLink extends WebSocketClient {
         log.warning("Connection has been closed. Reason: " + s + ", Code: " + i);
         if (b) {
             log.info("Remote host closed connection.");
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (player.isOp()) {
+                    Audience.audience(player).sendActionBar(Component.text("§cCaesar has been disconnected."));
+                }
+            });
             if (schedulerRestart.isShutdown()) {
                 schedulerRestart = Executors.newScheduledThreadPool(1);
                 schedulerRestart.scheduleAtFixedRate(this::reconnect, 10, 30, java.util.concurrent.TimeUnit.SECONDS);
@@ -179,17 +192,17 @@ public class CaesarLink extends WebSocketClient {
         log.severe("An error occurred: " + e.getMessage());
     }
 
-    @Override
-    public void send(String text) {
+
+    public void sendE(String text) {
         if (useEncryptedConnection) {
             try {
-                super.send(encrypt(text, getConnectionKey()));
+                send(encrypt(text, getConnectionKey()));
             } catch (Exception ex) {
                 log.severe("Could not encrypt text for sending.");
                 log.severe(ex.getMessage());
             }
         } else
-            super.send(text);
+            send(text);
     }
 
     public int pingServer() {
@@ -209,7 +222,7 @@ public class CaesarLink extends WebSocketClient {
     private void sendPong() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.PONG.name());
-        send(o.toString());
+        sendE(o.toString());
     }
 
     public void sendHandshake() {
@@ -223,7 +236,7 @@ public class CaesarLink extends WebSocketClient {
     private void sendPingData() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.PING.name());
-        send(o.toString());
+        sendE(o.toString());
     }
 
 
