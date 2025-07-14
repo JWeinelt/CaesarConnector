@@ -1,0 +1,51 @@
+{
+  "useReports": true,
+  "usePunishments": true,
+  "reports": {
+    "viewPortSize": 3,
+    "enableReportViewOnline": false,
+    "reportViewURL": "https://example.com/report?report-id=%RPID%",
+    "menus": [
+      {
+        "name": "Main",
+        "slots": [
+          {
+            "slot-id": 0,
+            "action": "CREATE_REPORT",
+            "display": "Skin Report",
+            "lore": [],
+            "glint": false,
+            "material": "PLAYER_HEAD",
+            "actionProperties": {
+              "reportType": "58e69752-83e4-4688-a4a4-4cf339451f1e"
+            }
+          },
+          {
+            "slot-id": 1,
+            "action": "OPEN_MENU",
+            "display": "Behavior",
+            "lore": [],
+            "glint": false,
+            "material": "DIAMOND_SWORD",
+            "actionProperties": {
+              "menuID": "behavior"
+            }
+          }
+        ]
+      },
+      {
+        "name": "behavior",
+        "showBackToMainButton": true,
+        "slots": []
+      }
+    ]
+  },
+  "punishments": {
+    "features": {
+      "bans": true,
+      "mutes": true,
+      "warns": false,
+      "kicks": true
+    }
+  }
+}
