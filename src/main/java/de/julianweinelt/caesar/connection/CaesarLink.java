@@ -119,6 +119,11 @@ public class CaesarLink extends WebSocketClient {
                         consoleHandler.setLive(false, null);
                     }
                     break;
+                case SERVER_STOP:
+                    Bukkit.getScheduler().runTask(CaesarConnector.getInstance(), Bukkit::shutdown);
+                    break;
+                case SERVER_RESTART:
+                    break;
             }
         }
     }
