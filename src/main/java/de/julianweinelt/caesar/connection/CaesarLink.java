@@ -236,7 +236,6 @@ public class CaesarLink extends WebSocketClient {
 
         byte[] ciphertext = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
 
-        // IV + ciphertext zusammenpacken
         byte[] encrypted = new byte[iv.length + ciphertext.length];
         System.arraycopy(iv, 0, encrypted, 0, iv.length);
         System.arraycopy(ciphertext, 0, encrypted, iv.length, ciphertext.length);
