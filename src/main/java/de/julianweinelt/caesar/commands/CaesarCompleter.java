@@ -16,13 +16,9 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             complete(completions, args[0], "setup");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setup")) {
-                complete(completions, args[1], "key", "db");
+                complete(completions, args[1], "generate-key", "db");
             }
         } else if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
-                complete(completions, args[2], "<KEY>");
-            }
-
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
                 complete(completions, args[2], "mysql", "mariadb", "mssql", "postgresql", "oracle_sql");
             }
