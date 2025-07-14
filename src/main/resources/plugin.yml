@@ -1,9 +1,13 @@
 name: CaesarConnector
 main: de.julianweinelt.caesar.CaesarConnector
-version: 0.0.1
+version: 1.0.1
 api-version: 1.13
 author: Julian Weinelt
 website: https://caesarnet.cloud
+
+softdepend:
+  - PlaceholderAPI
+  - LuckPerms
 
 commands:
   caesar:
