@@ -3,18 +3,24 @@ package de.julianweinelt.caesar.storage.providers;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.Storage;
+import de.julianweinelt.caesar.storage.StorageFactory;
 import org.bukkit.Bukkit;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class MySQL extends Storage {
     private final Logger log = CaesarConnector.getInstance().getLogger();
+
+    public static Storage instance() {
+        return StorageFactory.getInstance().getStorage();
+    }
 
     @Override
     public void connect() {
@@ -62,6 +68,18 @@ public class MySQL extends Storage {
             pS.setInt(5, memory);
             pS.setInt(6, (int) tps);
             pS.execute();
+        } catch (SQLException e) {
+            printStackStrace(e);
+        }
+    }
+
+    @Override
+    public void loadPlayers() {
+        playerNames.clear();
+        try (ResultSet set = conn.createStatement().executeQuery("SELECT * FROM mc_players")) {
+            while (set.next()) {
+                playerNames.put(UUID.fromString(set.getString(1)), set.getString(2));
+            }
         } catch (SQLException e) {
             printStackStrace(e);
         }

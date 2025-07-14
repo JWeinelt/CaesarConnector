@@ -4,15 +4,20 @@ import de.julianweinelt.caesar.CaesarConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public abstract class Storage {
     public Connection conn;
 
+    public HashMap<UUID, String> playerNames = new HashMap<>();
+
     public abstract void connect();
     public abstract void disconnect();
 
     public abstract void sendServerData();
+    public abstract void loadPlayers();
 
 
     public void printStackStrace(SQLException e) {

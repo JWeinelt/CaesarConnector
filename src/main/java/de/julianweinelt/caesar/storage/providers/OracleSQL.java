@@ -16,4 +16,9 @@ public class OracleSQL extends Storage {
     public void sendServerData() {
 
     }
+
+    @Override
+    public void loadPlayers() {
+
+    }
 }

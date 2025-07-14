@@ -17,4 +17,9 @@ public class MariaDB extends Storage {
     public void sendServerData() {
 
     }
+
+    @Override
+    public void loadPlayers() {
+
+    }
 }
