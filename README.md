@@ -25,7 +25,7 @@ If you want to find plugins and/or extensions, head to the [Caesar plugin market
 
 ## ⚙️ Installation
 ### Requirements
-- Java 17 or newer (CloudNET compatibility: Java 24)
+- Java 15 or newer (CloudNET compatibility: Java 24)
 - A Caesar backend
 - Minecraft server running Paper 1.17.2 or newer (forks may work too)
 - An internet connection (recommended)
