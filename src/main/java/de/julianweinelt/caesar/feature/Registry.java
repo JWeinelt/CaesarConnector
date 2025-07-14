@@ -3,7 +3,8 @@ package de.julianweinelt.caesar.feature;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.commands.ReportCommand;
 import de.julianweinelt.caesar.plugin.CPlugin;
-import de.julianweinelt.caesar.storage.LocalStorage;
+import de.julianweinelt.caesar.reports.ReportManager;
+import de.julianweinelt.caesar.reports.ReportView;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
@@ -17,6 +18,8 @@ import java.util.logging.Logger;
 public class Registry {
     @Getter
     private final List<CPlugin> plugins = new ArrayList<>();
+    @Getter
+    private final List<Feature> features = new ArrayList<>();
 
     private final Logger log = CaesarConnector.getInstance().getLogger();
 
@@ -28,7 +31,8 @@ public class Registry {
         switch (f) {
             case REPORT_SYSTEM:
                 CaesarConnector.getInstance().getServer().getCommandMap().register("report",
-                        new ReportCommand("report"));
+                        new ReportCommand("report").setAliases(List.of("reports")));
+                CaesarConnector.getInstance().setReportManager(new ReportManager());
                 log.info("Registered command: /report");
                 break;
             case BAN_SYSTEM:
@@ -47,5 +51,9 @@ public class Registry {
     public void registerExtension(CPlugin cPlugin) {
         log.info("Registering extension: " + cPlugin.getName());
         plugins.add(cPlugin);
+    }
+
+    public boolean featureActive(Feature f) {
+        return features.contains(f);
     }
 }

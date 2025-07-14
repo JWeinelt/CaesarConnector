@@ -9,9 +9,11 @@ import de.julianweinelt.caesar.commands.CaesarCommand;
 import de.julianweinelt.caesar.commands.CaesarCompleter;
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.feature.Registry;
+import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.StorageFactory;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,6 +44,10 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
 
     @Getter
     private Registry featureRegistry;
+
+    @Getter
+    @Setter
+    private ReportManager reportManager = null;
 
     @Getter
     private ExtensionLoader extensionLoader;
