@@ -142,7 +142,7 @@ public class CaesarLink extends WebSocketClient {
     }
 
     private byte[] getConnectionKey() {
-        String connKeyBase64 = LocalStorage.getInstance().getData().getConnectionKey(); // aus deinem Header
+        String connKeyBase64 = LocalStorage.getInstance().getData().getConnectionKey();
         return Base64.getDecoder().decode(connKeyBase64);
     }
 

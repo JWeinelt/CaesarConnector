@@ -41,15 +41,9 @@ public class CaesarCommand implements CommandExecutor {
                 sender.sendMessage("§c/caesar setup db <type> <host> <port> <database> <user> <password>");
                 return false;
             }
-        } else if (args.length == 2) {
-             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("generate-key")) {
-                 byte[] key = new byte[32]; // 256 bits
-                 SecureRandom random = new SecureRandom();
-                 random.nextBytes(key);
-
-                 String base64Key = Base64.getEncoder().encodeToString(key);
-
-                LocalStorage.getInstance().getData().setConnectionKey(base64Key);
+        } else if (args.length == 3) {
+             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
+                LocalStorage.getInstance().getData().setConnectionKey(args[2]);
                 sender.sendMessage("§aConnection key set.");
                 sender.sendMessage("§aRestarting CaesarLink...");
                 CaesarLink.getInstance().close();
