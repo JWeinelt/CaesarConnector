@@ -9,6 +9,7 @@ import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.reports.ReportView;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -17,6 +18,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -35,8 +37,9 @@ public class CaesarLink extends WebSocketClient {
 
     private ScheduledExecutorService schedulerRestart = Executors.newScheduledThreadPool(1);
 
-    private long pingStart;
     private CountDownLatch pingLatch;
+
+    private final LiveConsoleHandler consoleHandler = new LiveConsoleHandler();
 
     @Getter
     private String serverVersion;
@@ -100,17 +103,35 @@ public class CaesarLink extends WebSocketClient {
                 case PONG:
                     pingLatch.countDown();
                     break;
+                case SERVER_SHOW_CONSOLE:
+                    boolean stream =  root.get("stream").getAsBoolean();
+                    if (stream) {
+                        consoleHandler.setFormatter(new java.util.logging.SimpleFormatter());
+                        Bukkit.getLogger().addHandler(consoleHandler);
+                        consoleHandler.setLive(true, line -> {
+                            JsonObject response = new JsonObject();
+                            response.addProperty("action", "CONSOLE_OUTPUT_LIVE");
+                            response.addProperty("line", line);
+                            response.addProperty("server", CaesarConnector.getInstance().getName());
+                            send(response.toString());
+                        });
+                    } else {
+                        consoleHandler.setLive(false, null);
+                    }
+                    break;
             }
         }
     }
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        log.info("Connection has been closed. Reason: " + s + ", Code: " + i);
+        log.warning("Connection has been closed. Reason: " + s + ", Code: " + i);
         if (b) {
             log.info("Remote host closed connection.");
-            schedulerRestart = Executors.newScheduledThreadPool(1);
-            schedulerRestart.scheduleAtFixedRate(this::reconnect, 10, 30, java.util.concurrent.TimeUnit.SECONDS);
+            if (schedulerRestart == null) {
+                schedulerRestart = Executors.newScheduledThreadPool(1);
+                schedulerRestart.scheduleAtFixedRate(this::reconnect, 10, 30, java.util.concurrent.TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -119,8 +140,21 @@ public class CaesarLink extends WebSocketClient {
         log.severe("An error occurred: " + e.getMessage());
     }
 
+    @Override
+    public void send(String text) {
+        if (useEncryptedConnection) {
+            try {
+                super.send(encrypt(text, getConnectionKey()));
+            } catch (Exception ex) {
+                log.severe("Could not encrypt text for sending.");
+                log.severe(ex.getMessage());
+            }
+        } else
+            super.send(text);
+    }
+
     public int pingServer() {
-        pingStart = System.currentTimeMillis();
+        long pingStart = System.currentTimeMillis();
         sendPingData();
 
         pingLatch = new CountDownLatch(1);
@@ -149,7 +183,7 @@ public class CaesarLink extends WebSocketClient {
 
 
 
-    public static String decrypt(String encryptedBase64, byte[] key) throws Exception {
+    private String decrypt(String encryptedBase64, byte[] key) throws Exception {
         byte[] encrypted = Base64.getDecoder().decode(encryptedBase64);
 
         byte[] iv = new byte[GCM_IV_LENGTH];
@@ -169,6 +203,27 @@ public class CaesarLink extends WebSocketClient {
         return new String(plaintext, StandardCharsets.UTF_8);
     }
 
+    private String encrypt(String plaintext, byte[] key) throws Exception {
+        byte[] iv = new byte[GCM_IV_LENGTH];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(iv);
+
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+
+        byte[] ciphertext = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+
+        // IV + ciphertext zusammenpacken
+        byte[] encrypted = new byte[iv.length + ciphertext.length];
+        System.arraycopy(iv, 0, encrypted, 0, iv.length);
+        System.arraycopy(ciphertext, 0, encrypted, iv.length, ciphertext.length);
+
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
     private byte[] getConnectionKey() {
         String connKeyBase64 = LocalStorage.getInstance().getData().getConnectionKey();
         return Base64.getDecoder().decode(connKeyBase64);
@@ -180,5 +235,9 @@ public class CaesarLink extends WebSocketClient {
         TRANSFER_CONFIG,
         PING,
         PONG,
+        SERVER_RESTART,
+        SERVER_STOP,
+        SERVER_EXECUTE_COMMAND,
+        SERVER_SHOW_CONSOLE,
     }
 }
