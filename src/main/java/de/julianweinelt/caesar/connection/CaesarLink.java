@@ -19,8 +19,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class CaesarLink extends WebSocketClient {
@@ -32,6 +34,9 @@ public class CaesarLink extends WebSocketClient {
     private boolean useEncryptedConnection = false;
 
     private ScheduledExecutorService schedulerRestart = Executors.newScheduledThreadPool(1);
+
+    private long pingStart;
+    private CountDownLatch pingLatch;
 
     @Getter
     private String serverVersion;
@@ -64,7 +69,7 @@ public class CaesarLink extends WebSocketClient {
                 data = decrypt(s, getConnectionKey());
             } catch (Exception e) {
                 log.severe("Could not receive data from server.");
-                log.severe("Encryption is enabled, but the text provided can't be decrypted.");
+                log.severe("Encryption is enabled, but the text the server provided can't be decrypted.");
                 log.severe(e.getMessage());
             }
         }
@@ -92,6 +97,9 @@ public class CaesarLink extends WebSocketClient {
                     }
                     log.info("Configuration transfer complete.");
                     break;
+                case PONG:
+                    pingLatch.countDown();
+                    break;
             }
         }
     }
@@ -111,11 +119,31 @@ public class CaesarLink extends WebSocketClient {
         log.severe("An error occurred: " + e.getMessage());
     }
 
+    public int pingServer() {
+        pingStart = System.currentTimeMillis();
+        sendPingData();
+
+        pingLatch = new CountDownLatch(1);
+        try {
+            if (pingLatch.await(3, TimeUnit.SECONDS)) {
+                long nowMillis = System.currentTimeMillis();
+                return Math.toIntExact(nowMillis - pingStart);
+            } else return -2;
+        } catch (InterruptedException ignored) {}
+        return -1;
+    }
+
     public void sendHandshake() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.HANDSHAKE.name());
         o.addProperty("serverName", LocalStorage.getInstance().getData().getServerName());
         o.addProperty("serverId", LocalStorage.getInstance().getData().getServerId().toString());
+        send(o.toString());
+    }
+
+    private void sendPingData() {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PING.name());
         send(o.toString());
     }
 
@@ -149,6 +177,8 @@ public class CaesarLink extends WebSocketClient {
     public enum LinkAction {
         HANDSHAKE,
         DISCONNECT,
-        TRANSFER_CONFIG
+        TRANSFER_CONFIG,
+        PING,
+        PONG,
     }
 }

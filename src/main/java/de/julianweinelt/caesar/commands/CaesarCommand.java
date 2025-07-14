@@ -1,5 +1,6 @@
 package de.julianweinelt.caesar.commands;
 
+import de.julianweinelt.caesar.Caesar;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.feature.Feature;
@@ -22,7 +23,7 @@ public class CaesarCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
             sender.sendMessage("§e§lCAESAR");
-            sender.sendMessage("§eSystem version: §a" + CaesarConnector.getInstance().getLink().getServerVersion());
+            sender.sendMessage("§eSystem version: §a" + CaesarLink.getInstance().getServerVersion());
             String status;
             if (CaesarLink.getInstance().isOpen()) status = "§a✔ Connected";
             else status = "§c❌ Disconnected";
@@ -40,6 +41,14 @@ public class CaesarCommand implements CommandExecutor {
                 sender.sendMessage("§e§lCaesar - Command usage");
                 sender.sendMessage("§c/caesar setup db <type> <host> <port> <database> <user> <password>");
                 return false;
+            } else if (args[0].equalsIgnoreCase("test")) {
+                sender.sendMessage("§aSending a ping to the Caesar backend server...");
+                int ping = CaesarLink.getInstance().pingServer();
+                if (ping == -2) {
+                    sender.sendMessage("§cCaesar could get any answer. That seems strange...");
+                } else if (ping == -1) {
+                    sender.sendMessage("§cSomething went wrong. Please report this issue. Code: -1");
+                } else sender.sendMessage("§eGot a pong from backend: §a" + ping + "ms");
             }
         } else if (args.length == 3) {
              if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
