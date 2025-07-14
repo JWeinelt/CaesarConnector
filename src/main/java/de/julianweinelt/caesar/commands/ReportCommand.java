@@ -1,8 +1,10 @@
 package de.julianweinelt.caesar.commands;
 
+import de.julianweinelt.caesar.reports.ReportView;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +20,7 @@ public class ReportCommand extends BukkitCommand {
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         if (label.equalsIgnoreCase("report")) {
             if (args.length == 0) {
-
+                ReportView.instance().openPlayerSelection((Player) sender);
             }
         }
         return false;
