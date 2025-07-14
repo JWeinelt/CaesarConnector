@@ -141,7 +141,7 @@ public class CaesarLink extends WebSocketClient {
         log.warning("Connection has been closed. Reason: " + s + ", Code: " + i);
         if (b) {
             log.info("Remote host closed connection.");
-            if (schedulerRestart == null) {
+            if (schedulerRestart.isShutdown()) {
                 schedulerRestart = Executors.newScheduledThreadPool(1);
                 schedulerRestart.scheduleAtFixedRate(this::reconnect, 10, 30, java.util.concurrent.TimeUnit.SECONDS);
             }
