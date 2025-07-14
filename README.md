@@ -26,13 +26,17 @@ If you want to find plugins and/or extensions, head to the [Caesar plugin market
 ## ⚙️ Installation
 ### Requirements
 - Java 15 or newer (CloudNET compatibility: Java 24)
-- A Caesar backend
+- A Caesar backend (v1.0.0 or newer)
 - Minecraft server running Paper 1.17.2 or newer (forks may work too)
 - An internet connection (recommended)
 - Caesar not running on SQLite or H2
 
 > [!WARNING]
 > The database engines **SQLite** and **H2** are not recommended for production environments and may cause data inconsistency.
+
+> [!TIP]
+> Caesar is using **semantic versioning** in all modules.
+> That means, that e.g. CaesarConnector v1.__2__.1 is compatible with CaesarServer v1.__2__.1 and v1.2.__8__ aswell.
 
 ### Getting started
 - 📥 Download the latest release from [Releases](https://github.com/Jweinelt/CaesarConnector/releases)
