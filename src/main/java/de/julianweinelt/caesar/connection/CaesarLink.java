@@ -74,6 +74,7 @@ public class CaesarLink extends WebSocketClient {
                 log.severe("Could not receive data from server.");
                 log.severe("Encryption is enabled, but the text the server provided can't be decrypted.");
                 log.severe(e.getMessage());
+                return;
             }
         }
         JsonObject root = JsonParser.parseString(data).getAsJsonObject();
