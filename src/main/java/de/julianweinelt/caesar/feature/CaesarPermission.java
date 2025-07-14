@@ -24,6 +24,7 @@ public class CaesarPermission {
         p.add(KICK_COMMAND);
         p.add(WARN_COMMAND);
         p.add(REPORT_COMMAND);
+        p.add(NOTIFY);
         return p;
     }
 }
