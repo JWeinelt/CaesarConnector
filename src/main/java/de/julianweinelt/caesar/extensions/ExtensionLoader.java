@@ -30,7 +30,7 @@ public class ExtensionLoader {
 
     private final Registry registry = CaesarConnector.getInstance().getFeatureRegistry();
 
-    private final HashMap<String, URL> moduleURLs = new HashMap<>();
+    private final HashMap<String, URL> extensionURLs = new HashMap<>();
     private URLClassLoader sharedLoader;
 
     public void prepareLoading() {
@@ -58,7 +58,7 @@ public class ExtensionLoader {
                             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
 
                             URL jarURL = jarPath.toUri().toURL();
-                            moduleURLs.put(json.get("pluginName").getAsString(), jarURL);
+                            extensionURLs.put(json.get("pluginName").getAsString(), jarURL);
                         }
                     }
                 } catch (Exception e) {
@@ -67,12 +67,12 @@ public class ExtensionLoader {
             }
         }
 
-        sharedLoader = new URLClassLoader(moduleURLs.values().toArray(URL[]::new), getClass().getClassLoader());
+        sharedLoader = new URLClassLoader(extensionURLs.values().toArray(URL[]::new), getClass().getClassLoader());
     }
 
     public void loadExtensions() {
         log.info("Loading extensions...");
-        for (String name : moduleURLs.keySet()) {
+        for (String name : extensionURLs.keySet()) {
             loadExtension(name);
         }
     }
@@ -112,7 +112,7 @@ public class ExtensionLoader {
                     }
 
                     CPlugin extensionInstance = (CPlugin) mainClass.getDeclaredConstructor().newInstance();
-                    log.info("Module Classloader: " + extensionInstance.getClass().getClassLoader());
+                    log.info("Extension Classloader: " + extensionInstance.getClass().getClassLoader());
 
                     extensionInstance.onBukkitLoad();
 
