@@ -7,11 +7,15 @@ import de.julianweinelt.caesar.plugin.CPlugin;
 import de.julianweinelt.caesar.reports.ReportManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -63,5 +67,15 @@ public class Registry {
 
     public boolean featureActive(Feature f) {
         return features.contains(f);
+    }
+
+    private void overrideVanillaCommands(boolean override) {
+        if (!override) return;
+
+        CommandMap commandMap = Bukkit.getCommandMap();
+
+        Map<String, Command> knownCommands = commandMap.getKnownCommands();
+        knownCommands.remove("minecraft:ban");
+        knownCommands.remove("minecraft:kick");
     }
 }
