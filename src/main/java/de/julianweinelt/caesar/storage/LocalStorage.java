@@ -29,7 +29,7 @@ public class LocalStorage {
     }
 
     public LocalStorage() {
-        CaesarConnector.getInstance().getDataFolder().mkdir();
+        if (CaesarConnector.getInstance().getDataFolder().mkdir()) log.info("Data folder created.");
     }
 
     public void loadData() {
