@@ -1,11 +1,13 @@
 package de.julianweinelt.caesar.connection;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.feature.Feature;
 import de.julianweinelt.caesar.feature.NotificationManager;
+import de.julianweinelt.caesar.feature.PunishmentManager;
 import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.reports.ReportView;
@@ -16,6 +18,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -26,10 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -141,6 +141,18 @@ public class CaesarLink extends WebSocketClient {
                     break;
                 case PING:
                     sendPong();
+                    break;
+                case PUNISHMENT_LIST:
+                    List<UUID> banned = new ArrayList<>();
+                    List<UUID> muted = new ArrayList<>();
+                    for (JsonElement e : root.get("banned").getAsJsonArray()) {
+                        banned.add(UUID.fromString(e.getAsString()));
+                    }
+                    for (JsonElement e : root.get("muted").getAsJsonArray()) {
+                        muted.add(UUID.fromString(e.getAsString()));
+                    }
+                    PunishmentManager.instance().update(banned, muted);
+                    log.info("Received a list of banned and muted players from backend.");
                     break;
                 case SERVER_SHOW_CONSOLE:
                     boolean stream =  root.get("stream").getAsBoolean();
@@ -254,6 +266,50 @@ public class CaesarLink extends WebSocketClient {
         sendE(o.toString());
     }
 
+    public void mutePlayer(OfflinePlayer player, UUID mutedBy, String reason, long until) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_MUTE.name());
+        o.addProperty("toMute", player.getUniqueId().toString());
+        o.addProperty("mutedBy", mutedBy.toString());
+        o.addProperty("reason", reason);
+        o.addProperty("until", until);
+        sendE(o.toString());
+    }
+
+    public void kickPlayer(Player player, UUID kickBy, String reason) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_KICK.name());
+        o.addProperty("kicked", player.getUniqueId().toString());
+        o.addProperty("kickedBy", kickBy.toString());
+        o.addProperty("reason", reason);
+        sendE(o.toString());
+    }
+
+    public void warnPlayer(OfflinePlayer player, UUID warnBy, String reason) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_WARN.name());
+        o.addProperty("warned", player.getUniqueId().toString());
+        o.addProperty("warnBy", warnBy.toString());
+        o.addProperty("reason", reason);
+        sendE(o.toString());
+    }
+
+
+    public void unbanPlayer(OfflinePlayer player, UUID warnBy) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_UNBAN.name());
+        o.addProperty("banned", player.getUniqueId().toString());
+        o.addProperty("unbanBy", warnBy.toString());
+        sendE(o.toString());
+    }
+    public void unmutePlayer(OfflinePlayer player, UUID warnBy) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_UNMUTE.name());
+        o.addProperty("muted", player.getUniqueId().toString());
+        o.addProperty("unmuteBy", warnBy.toString());
+        sendE(o.toString());
+    }
+
     private void sendPong() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.PONG.name());
@@ -335,9 +391,13 @@ public class CaesarLink extends WebSocketClient {
         PLAYER_KICK,
         PLAYER_WARN,
         PLAYER_BAN,
+        PLAYER_MUTE,
+        PLAYER_UNBAN,
+        PLAYER_UNMUTE,
         PLAYER_INFO,
         PLAYER_LIST,
         PLAYER_REPORT,
+        PUNISHMENT_LIST,
         REPORT_CREATE,
         REPORT_UPDATE,
         REPORT_DELETE,

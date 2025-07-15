@@ -33,12 +33,17 @@ public class PunishmentManager implements Listener {
         bannedPlayers.remove(p.getUniqueId());
     }
 
-    public void mutePlayer(Player p) {
+    public void mutePlayer(OfflinePlayer p) {
         mutedPlayers.add(p.getUniqueId());
     }
 
-    public void unmutePlayer(Player p) {
+    public void unmutePlayer(OfflinePlayer p) {
         mutedPlayers.remove(p.getUniqueId());
+    }
+
+    public void update(List<UUID> banned, List<UUID> muted) {
+        bannedPlayers.addAll(banned);
+        mutedPlayers.addAll(muted);
     }
 
 
@@ -46,6 +51,7 @@ public class PunishmentManager implements Listener {
     public void onLogin(PlayerLoginEvent e) {
         if (bannedPlayers.contains(e.getPlayer().getUniqueId())) {
             e.disallow(PlayerLoginEvent.Result.KICK_BANNED, Component.text("You are banned."));
+            //TODO: Use custom message with %reason% placeholder
         }
     }
 

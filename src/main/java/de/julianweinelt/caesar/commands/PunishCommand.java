@@ -27,11 +27,12 @@ public class PunishCommand extends BukkitCommand {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        UUID senderUUID;
+        if (!(sender instanceof Player player)) {
+            senderUUID = UUID.fromString("b1814b18-664e-4d4c-9a0d-2151fbc5e8ef");
+        } else senderUUID = player.getUniqueId();
+
         if (label.equalsIgnoreCase("ban")) {
-            UUID senderUUID;
-            if (!(sender instanceof Player player)) {
-                senderUUID = UUID.fromString("b1814b18-664e-4d4c-9a0d-2151fbc5e8ef");
-            } else senderUUID = player.getUniqueId();
             if (args.length == 0) {
                 sender.sendMessage("§cPlease provide a player to ban!");
             }
@@ -39,8 +40,8 @@ public class PunishCommand extends BukkitCommand {
                 OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
 
                 PunishmentManager.instance().banPlayer(toBan);
-                CaesarLink.getInstance().banPlayer(toBan, senderUUID, "", -1);
-                sender.sendMessage("§eThe player§c " +  args[0] + "§e has been banned!");
+                CaesarLink.getInstance().banPlayer(toBan, senderUUID, "Not provided", -1);
+                sender.sendMessage("§eThe player§c " +  args[0] + "§e has been banned.");
             } else if (args.length == 2) {
                 OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
 
@@ -61,6 +62,79 @@ public class PunishCommand extends BukkitCommand {
                 sender.sendMessage(Component.text("§eThe player§c " + args[0] + "§e has been banned until §c"
                 + formatUnixTime(time) + "§e!").append(Component.text(" §b[View reason]")
                         .hoverEvent(HoverEvent.showText(Component.text(reason.toString())))));
+            }
+        } else if (label.equalsIgnoreCase("kick")) {
+            if (args.length == 1) {
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null) {
+                    sender.sendMessage("§cPlease name a valid player. The player must be online!");
+                    return false;
+                }
+                CaesarLink.getInstance().kickPlayer(player, senderUUID, "Not provided");
+                player.kick(Component.empty());
+                sender.sendMessage("§c" + player.getName() + " has been kicked.");
+            } else if (args.length == 2) {
+                Player player = Bukkit.getPlayer(args[0]);
+                if (player == null) {
+                    sender.sendMessage("§cPlease name a valid player. The player must be online!");
+                    return false;
+                }
+                CaesarLink.getInstance().kickPlayer(player, senderUUID, args[1]);
+                player.kick(Component.text(args[1]));
+                sender.sendMessage("§c" + player.getName() + " has been kicked.");
+            }
+        } else if (label.equalsIgnoreCase("warn")) {
+            if (args.length == 1) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                CaesarLink.getInstance().warnPlayer(player, senderUUID, "Not provided");
+                sender.sendMessage("§c" + player.getName() + " has been warned.");
+            } else if (args.length == 2) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                CaesarLink.getInstance().warnPlayer(player, senderUUID, args[1]);
+                sender.sendMessage("§c" + player.getName() + " has been warned.");
+            }
+        } else if (label.equalsIgnoreCase("mute")) {
+            if (args.length == 0) {
+                sender.sendMessage("§cPlease provide a player to mute!");
+            }
+            if (args.length == 1) {
+                OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
+
+                PunishmentManager.instance().mutePlayer(toBan);
+                CaesarLink.getInstance().mutePlayer(toBan, senderUUID, "Not provided", -1);
+                sender.sendMessage("§eThe player§c " +  args[0] + "§e has been muted.");
+            } else if (args.length == 2) {
+                OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
+
+                PunishmentManager.instance().mutePlayer(toBan);
+                long time = parseTimeOffset(args[1]);
+                CaesarLink.getInstance().mutePlayer(toBan, senderUUID, "", time);
+                sender.sendMessage("§eThe player§c " +  args[0] + "§e has been muted until §c" + formatUnixTime(time) + "!");
+            } else if (args.length >= 3) {
+                OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
+
+                PunishmentManager.instance().mutePlayer(toBan);
+                long time = parseTimeOffset(args[1]);
+                StringBuilder reason = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    reason.append(args[i]).append(" ");
+                }
+                CaesarLink.getInstance().mutePlayer(toBan, senderUUID, reason.toString(), time);
+                sender.sendMessage(Component.text("§eThe player§c " + args[0] + "§e has been muted until §c"
+                        + formatUnixTime(time) + "§e!").append(Component.text(" §b[View reason]")
+                        .hoverEvent(HoverEvent.showText(Component.text(reason.toString())))));
+            }
+        } else if (label.equalsIgnoreCase("unban")) {
+            if (args.length == 1) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                PunishmentManager.instance().unbanPlayer(player);
+                CaesarLink.getInstance().unbanPlayer(player, senderUUID);
+            }
+        } else if (label.equalsIgnoreCase("unmute")) {
+            if (args.length == 1) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+                PunishmentManager.instance().unmutePlayer(player);
+                CaesarLink.getInstance().unmutePlayer(player, senderUUID);
             }
         }
         return false;
