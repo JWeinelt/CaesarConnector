@@ -35,6 +35,8 @@ public class CaesarCommand implements CommandExecutor {
             if (args[0].equalsIgnoreCase("setup")) {
                 sender.sendMessage("§e§lCaesar - Command usage");
                 sender.sendMessage("§c/caesar setup db <type> <host> <port> <database> <user> <password>");
+                sender.sendMessage("§c/caesar setup caesar <host> <port>");
+                sender.sendMessage("§c/caesar setup key <key>");
                 return false;
             } else if (args[0].equalsIgnoreCase("test")) {
                 sender.sendMessage("§aSending a ping to the Caesar backend server...");
@@ -43,7 +45,21 @@ public class CaesarCommand implements CommandExecutor {
                     sender.sendMessage("§cCaesar couldn't get any answer. That seems strange...");
                 } else if (ping == -1) {
                     sender.sendMessage("§cSomething went wrong. Please report this issue. Code: -1");
-                } else sender.sendMessage("§eGot a pong from backend: §a" + ping + "ms");
+                } else {
+                    String color = "a";
+                    String info = "This is absolutely normal. Your server is working great!";
+                    if (ping > 80) {
+                        color = "c";
+                        info = "Your ping is quite high. If the Backend is running on the same server, there might be a performance leak.";
+                    }
+                    if (ping > 50 && ping <= 80) {
+                        color = "6";
+                        info = "Your ping could be better. Everything's working, but expect minimal waiting times at some places.";
+                    }
+                    sender.sendMessage("§eGot a pong from backend: §" + color + ping + "ms");
+                    sender.sendMessage(Component.text("§eGot a pong from backend: ").append(Component.text("§" + color + ping + "ms ")
+                            .append(Component.text("§bℹ").hoverEvent(HoverEvent.showText(Component.text("§" + color + info))))));
+                }
             }
         } else if (args.length == 3) {
              if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
