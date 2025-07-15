@@ -9,7 +9,6 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 
