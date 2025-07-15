@@ -28,7 +28,7 @@ public class CaesarCommand implements CommandExecutor {
             sender.sendMessage(
                     Component.text("§eExtensions loaded: ").append(Component.text("⍰")
                             .hoverEvent(HoverEvent.showText(Component.text("§aExtensions are Caesar plugins that are compatible with Minecraft."))))
-                            .append(Component.text("§a" + Registry.instance().getPlugins().size()))
+                            .append(Component.newline()).append(Component.text("§a" + Registry.instance().getPlugins().size()))
             );
             return false;
         } else if (args.length == 1) {
@@ -40,7 +40,7 @@ public class CaesarCommand implements CommandExecutor {
                 sender.sendMessage("§aSending a ping to the Caesar backend server...");
                 int ping = CaesarLink.getInstance().pingServer();
                 if (ping == -2) {
-                    sender.sendMessage("§cCaesar could get any answer. That seems strange...");
+                    sender.sendMessage("§cCaesar couldn't get any answer. That seems strange...");
                 } else if (ping == -1) {
                     sender.sendMessage("§cSomething went wrong. Please report this issue. Code: -1");
                 } else sender.sendMessage("§eGot a pong from backend: §a" + ping + "ms");
