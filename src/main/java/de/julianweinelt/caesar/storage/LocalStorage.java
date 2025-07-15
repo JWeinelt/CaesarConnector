@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.julianweinelt.caesar.CaesarConnector;
+import de.julianweinelt.caesar.storage.virtual.VirtualConfiguration;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.*;
 import java.util.logging.Logger;
@@ -12,6 +14,9 @@ import java.util.logging.Logger;
 public class LocalStorage {
     @Getter
     private Configuration data = new Configuration();
+    @Getter
+    @Setter
+    private VirtualConfiguration vConf = new VirtualConfiguration();
     private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final File configFile = new File(CaesarConnector.getInstance().getDataFolder(), "config.json");
