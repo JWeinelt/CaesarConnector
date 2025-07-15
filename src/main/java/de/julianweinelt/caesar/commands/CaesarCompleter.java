@@ -16,7 +16,7 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             complete(completions, args[0], "setup", "extension", "test");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setup")) {
-                complete(completions, args[1], "key", "db");
+                complete(completions, args[1], "key", "db", "caesar", "language");
             } else if (args[0].equalsIgnoreCase("extension")) {
                 complete(completions, args[1], "list", "reload", "disable", "enable", "load", "unload");
             }
@@ -24,9 +24,23 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
                 complete(completions, args[2], "mysql", "mariadb", "mssql", "postgresql", "oracle_sql");
             }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("caesar")) {
+                complete(completions, args[2], "<host>");
+            }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {
+                complete(completions, args[2], "<secret>");
+            }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("language")) {
+                complete(completions, args[2], "list", "download");
+            }
         } else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
                 complete(completions, args[3], "<HOST>");
+            }
+
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("language")
+            && args[2].equalsIgnoreCase("download")) {
+                //TODO: Display downloadable language files
             }
         } else if (args.length == 5) {
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
