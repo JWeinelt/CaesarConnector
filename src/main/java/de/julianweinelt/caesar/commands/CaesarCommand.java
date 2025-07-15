@@ -2,6 +2,7 @@ package de.julianweinelt.caesar.commands;
 
 import de.julianweinelt.caesar.connection.CaesarLink;
 import de.julianweinelt.caesar.feature.Feature;
+import de.julianweinelt.caesar.feature.NotificationManager;
 import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import de.julianweinelt.caesar.storage.StorageFactory;
@@ -11,6 +12,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CaesarCommand implements CommandExecutor {
@@ -60,6 +62,8 @@ public class CaesarCommand implements CommandExecutor {
                     sender.sendMessage(Component.text("§eGot a pong from backend: ").append(Component.text("§" + color + ping + "ms ")
                             .append(Component.text("§bℹ").hoverEvent(HoverEvent.showText(Component.text("§" + color + info))))));
                 }
+            } else if (args[0].equalsIgnoreCase("notify")) {
+                NotificationManager.getInstance().toggle((Player) sender);
             }
         } else if (args.length == 3) {
              if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("key")) {

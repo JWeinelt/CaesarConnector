@@ -13,7 +13,7 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> completions = new ArrayList<>();
         if (args.length <= 1) {
-            complete(completions, args[0], "setup", "extension", "test");
+            complete(completions, args[0], "setup", "extension", "test", "notify");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setup")) {
                 complete(completions, args[1], "key", "db", "caesar", "language");

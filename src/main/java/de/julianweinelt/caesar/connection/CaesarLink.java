@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.julianweinelt.caesar.CaesarConnector;
 import de.julianweinelt.caesar.feature.Feature;
+import de.julianweinelt.caesar.feature.NotificationManager;
 import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.reports.ReportView;
@@ -91,8 +92,8 @@ public class CaesarLink extends WebSocketClient {
                     useEncryptedConnection = root.get("useEncryptedConnection").getAsBoolean();
                     log.info("Server version: " + serverVersion);
                     Bukkit.getOnlinePlayers().forEach(player -> {
-                        if (player.isOp()) {
-                            Audience.audience(player).sendActionBar(Component.text("§aCaesar is back online!"));
+                        if (NotificationManager.getInstance().hasNotification(player.getUniqueId())) {
+                            Audience.audience(player).sendActionBar(Component.text("§aCaesar has been connected!"));
                         }
                     });
                     break;
@@ -176,7 +177,7 @@ public class CaesarLink extends WebSocketClient {
         if (b) {
             log.info("Remote host closed connection.");
             Bukkit.getOnlinePlayers().forEach(player -> {
-                if (player.isOp()) {
+                if (NotificationManager.getInstance().hasNotification(player.getUniqueId())) {
                     Audience.audience(player).sendActionBar(Component.text("§cCaesar has been disconnected."));
                 }
             });

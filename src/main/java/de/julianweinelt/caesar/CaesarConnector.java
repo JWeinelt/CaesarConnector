@@ -8,6 +8,7 @@ import de.julianweinelt.caesar.extensions.ExtensionLoader;
 import de.julianweinelt.caesar.commands.CaesarCommand;
 import de.julianweinelt.caesar.commands.CaesarCompleter;
 import de.julianweinelt.caesar.connection.CaesarLink;
+import de.julianweinelt.caesar.feature.NotificationManager;
 import de.julianweinelt.caesar.feature.Registry;
 import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.storage.LocalStorage;
@@ -51,6 +52,8 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
     @Getter
     @Setter
     private ReportManager reportManager = null;
+    @Getter
+    private final NotificationManager notificationManager = new NotificationManager();
 
     @Getter
     private ExtensionLoader extensionLoader;
