@@ -1,10 +1,10 @@
 package de.julianweinelt.caesar.feature;
 
 import de.julianweinelt.caesar.CaesarConnector;
+import de.julianweinelt.caesar.commands.PunishCommand;
 import de.julianweinelt.caesar.commands.ReportCommand;
 import de.julianweinelt.caesar.plugin.CPlugin;
 import de.julianweinelt.caesar.reports.ReportManager;
-import de.julianweinelt.caesar.reports.ReportView;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
@@ -30,13 +30,20 @@ public class Registry {
     public void registerFeature(Feature f) {
         switch (f) {
             case REPORT_SYSTEM:
-                CaesarConnector.getInstance().getServer().getCommandMap().register("report",
+                CaesarConnector.getInstance().getServer().getCommandMap().register("report", "caesar",
                         new ReportCommand("report").setAliases(List.of("reports")));
                 CaesarConnector.getInstance().setReportManager(new ReportManager());
                 features.add(Feature.REPORT_SYSTEM);
                 log.info("Registered command: /report");
                 break;
             case BAN_SYSTEM:
+                features.add(Feature.BAN_SYSTEM);
+                CaesarConnector.getInstance().setPunishmentManager(new PunishmentManager());
+                Bukkit.getPluginManager().registerEvents(PunishmentManager.instance(), CaesarConnector.getInstance());
+
+                CaesarConnector.getInstance().getServer().getCommandMap().register("ban", "caesar",
+                        new PunishCommand("ban").setAliases(List.of("bans", "mute", "unban", "unmute", "kick", "warn",
+                                "punishments")));
                 break;
         }
     }

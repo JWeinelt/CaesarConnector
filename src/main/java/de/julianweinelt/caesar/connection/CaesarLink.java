@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -26,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -220,13 +222,23 @@ public class CaesarLink extends WebSocketClient {
         return -1;
     }
 
+    public void banPlayer(OfflinePlayer player, UUID bannedBy, String reason, long until) {
+        JsonObject o = new JsonObject();
+        o.addProperty("action", LinkAction.PLAYER_BAN.name());
+        o.addProperty("toBan", player.getUniqueId().toString());
+        o.addProperty("bannedBy", bannedBy.toString());
+        o.addProperty("reason", reason);
+        o.addProperty("until", until);
+        sendE(o.toString());
+    }
+
     private void sendPong() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.PONG.name());
         sendE(o.toString());
     }
 
-    public void sendHandshake() {
+    private void sendHandshake() {
         JsonObject o = new JsonObject();
         o.addProperty("action", LinkAction.HANDSHAKE.name());
         o.addProperty("serverName", LocalStorage.getInstance().getData().getServerName());
