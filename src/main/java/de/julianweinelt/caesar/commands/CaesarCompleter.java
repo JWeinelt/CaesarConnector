@@ -45,6 +45,10 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             && args[2].equalsIgnoreCase("download")) {
                 //TODO: Display downloadable language files
             }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("encryption")
+            && (args[2].equalsIgnoreCase("enable") || args[2].equalsIgnoreCase("disable"))) {
+                complete(completions, args[3], "--no-restart");
+            }
         } else if (args.length == 5) {
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
                 complete(completions, args[4], "<PORT>");

@@ -72,7 +72,7 @@ public class CaesarCommand implements CommandExecutor {
                 sender.sendMessage("§aRestarting CaesarLink...");
                 CaesarLink.getInstance().close();
                 CaesarLink.getInstance().connect();
-            }
+             }
              if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("encryption")) {
                  if (args[2].equalsIgnoreCase("enable")) {
                      CaesarLink.getInstance().setUseEncryptedConnection(true);
@@ -90,6 +90,17 @@ public class CaesarCommand implements CommandExecutor {
                     CaesarLink.getInstance().restart(host, port);
                 } catch (NumberFormatException e) {
                     sender.sendMessage("§cPlease provide a valid port to connect to your Caesar backend.");
+                }
+            }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("encryption")) {
+                if (args[2].equalsIgnoreCase("enable")) {
+                    CaesarLink.getInstance().setUseEncryptedConnection(true);
+                    if (!args[3].equalsIgnoreCase("--no-restart"))
+                        CaesarLink.getInstance().restart();
+                } else if (args[2].equalsIgnoreCase("disable")) {
+                    CaesarLink.getInstance().setUseEncryptedConnection(false);
+                    if (!args[3].equalsIgnoreCase("--no-restart"))
+                        CaesarLink.getInstance().restart();
                 }
             }
         } else if (args.length == 8) {
