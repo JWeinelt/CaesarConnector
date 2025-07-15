@@ -1,6 +1,6 @@
 # 🏛️ Caesar Connector
 
-![Static Badge](https://img.shields.io/badge/version-v0.0.1-green)[![Maven](https://github.com/JWeinelt/CaesarConnector/actions/workflows/maven.yml/badge.svg)](https://github.com/JWeinelt/CaesarConnector/actions/workflows/maven.yml)
+![Static Badge](https://img.shields.io/badge/version-v0.2.0-green)[![Maven](https://github.com/JWeinelt/CaesarConnector/actions/workflows/maven.yml/badge.svg)](https://github.com/JWeinelt/CaesarConnector/actions/workflows/maven.yml)
 
 Caesar is a full-featured server management system for Minecraft servers. It seemlessly integrated with **CloudNET v4** and provides you an advanced interface for everything.
 With this Minecraft plugin, Caesar will connect to your Minecraft servers, either running standalone or with a cloud management software like CloudNET.
