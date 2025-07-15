@@ -17,6 +17,7 @@ import de.julianweinelt.caesar.storage.StorageFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -105,8 +106,11 @@ public class CaesarConnector extends JavaPlugin implements PluginMessageListener
             link.connect();
         }
 
-        getCommand("caesar").setExecutor(new CaesarCommand());
-        getCommand("caesar").setTabCompleter(new CaesarCompleter());
+        PluginCommand caesarCommand = getCommand("caesar");
+        if (caesarCommand != null) {
+            caesarCommand.setExecutor(new CaesarCommand());
+            caesarCommand.setTabCompleter(new CaesarCompleter());
+        }
 
         log.info("Starting system usage analyzer...");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () ->
