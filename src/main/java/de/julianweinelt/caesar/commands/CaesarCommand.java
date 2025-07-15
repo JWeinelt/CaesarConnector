@@ -26,7 +26,7 @@ public class CaesarCommand implements CommandExecutor {
             sender.sendMessage("§eReports: " + ((Registry.instance().featureActive(Feature.REPORT_SYSTEM)) ? "§a✔ Active" : "§c❌ Not active"));
             sender.sendMessage("§ePunishments: " + ((Registry.instance().featureActive(Feature.BAN_SYSTEM)) ? "§a✔ Active" : "§c❌ Not active"));
             sender.sendMessage(
-                    Component.text("§eExtensions loaded: ").append(Component.text("⍰")
+                    Component.text("§eExtensions loaded: ").append(Component.text("ℹ")
                             .hoverEvent(HoverEvent.showText(Component.text("§aExtensions are Caesar plugins that are compatible with Minecraft."))))
                             .append(Component.newline()).append(Component.text("§a" + Registry.instance().getPlugins().size()))
             );
