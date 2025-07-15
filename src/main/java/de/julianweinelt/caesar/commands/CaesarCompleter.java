@@ -16,7 +16,7 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             complete(completions, args[0], "setup", "extension", "test", "notify");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setup")) {
-                complete(completions, args[1], "key", "db", "caesar", "language");
+                complete(completions, args[1], "key", "db", "caesar", "language", "encryption");
             } else if (args[0].equalsIgnoreCase("extension")) {
                 complete(completions, args[1], "list", "reload", "disable", "enable", "load", "unload");
             }
@@ -32,6 +32,9 @@ public class CaesarCompleter extends AdvancedTabCompleter implements TabComplete
             }
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("language")) {
                 complete(completions, args[2], "list", "download");
+            }
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("encryption")) {
+                complete(completions, args[2], "enable", "disable", "status");
             }
         } else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {

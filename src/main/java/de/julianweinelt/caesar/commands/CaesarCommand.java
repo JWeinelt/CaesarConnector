@@ -73,6 +73,25 @@ public class CaesarCommand implements CommandExecutor {
                 CaesarLink.getInstance().close();
                 CaesarLink.getInstance().connect();
             }
+             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("encryption")) {
+                 if (args[2].equalsIgnoreCase("enable")) {
+                     CaesarLink.getInstance().setUseEncryptedConnection(true);
+                     CaesarLink.getInstance().restart();
+                 } else if (args[2].equalsIgnoreCase("disable")) {
+                     CaesarLink.getInstance().setUseEncryptedConnection(false);
+                     CaesarLink.getInstance().restart();
+                 }
+             }
+        } else if (args.length == 4) {
+            if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("caesar")) {
+                String host = args[2];
+                try {
+                    int port = Integer.parseInt(args[3]);
+                    CaesarLink.getInstance().restart(host, port);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage("§cPlease provide a valid port to connect to your Caesar backend.");
+                }
+            }
         } else if (args.length == 8) {
             if (args[0].equalsIgnoreCase("setup") && args[1].equalsIgnoreCase("db")) {
                 StorageType type = StorageType.valueOf(args[2].toUpperCase());

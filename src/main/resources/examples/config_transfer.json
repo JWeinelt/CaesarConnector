@@ -1,6 +1,8 @@
 {
   "useReports": true,
   "usePunishments": true,
+  "timeZone": "UTC",
+  "datePattern": "dd.MM.yyyy hh:mm",
   "reports": {
     "viewPortSize": 3,
     "enableReportViewOnline": false,

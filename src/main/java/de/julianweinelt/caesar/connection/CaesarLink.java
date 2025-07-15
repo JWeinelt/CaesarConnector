@@ -11,6 +11,7 @@ import de.julianweinelt.caesar.reports.ReportManager;
 import de.julianweinelt.caesar.reports.ReportView;
 import de.julianweinelt.caesar.storage.LocalStorage;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -40,6 +42,8 @@ public class CaesarLink extends WebSocketClient {
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 16;
 
+    @Getter
+    @Setter
     private boolean useEncryptedConnection = false;
 
     private ScheduledExecutorService schedulerRestart = Executors.newScheduledThreadPool(1);
@@ -63,6 +67,23 @@ public class CaesarLink extends WebSocketClient {
         super(serverUri);
     }
 
+    public void restart(String host, int port) {
+        try {
+            closeBlocking();
+            super.uri = URI.create("ws://" + host + ":" + port);
+            super.clearHeaders();
+            super.addHeader("ConnectionKey", LocalStorage.getInstance().getData().getConnectionKey());
+            connect();
+        } catch (InterruptedException ignored) {}
+    }
+
+    public void restart() {
+        try {
+            closeBlocking();
+            connect();
+        } catch (InterruptedException ignored) {}
+    }
+
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
         schedulerRestart.shutdown();
@@ -79,7 +100,7 @@ public class CaesarLink extends WebSocketClient {
                 data = decrypt(s, getConnectionKey());
             } catch (Exception e) {
                 log.severe("Could not receive data from server.");
-                log.severe("Encryption is enabled, but the text the server provided can't be decrypted.");
+                log.severe("Encryption is enabled, but the text sent by the server provided can't be decrypted.");
                 log.severe(e.getMessage());
                 return;
             }
@@ -101,6 +122,7 @@ public class CaesarLink extends WebSocketClient {
                     break;
                 case DISCONNECT:
                     log.info("Received disconnect from Caesar.");
+                    super.close(0);
                     break;
                 case TRANSFER_CONFIG:
                     log.info("Received configuration from Caesar.");
