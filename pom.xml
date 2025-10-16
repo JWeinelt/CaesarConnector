@@ -97,7 +97,7 @@
         <dependency>
             <groupId>de.codeblocksmc.codelib</groupId>
             <artifactId>CodeLib</artifactId>
-            <version>3.4.4</version>
+            <version>3.5.1</version>
         </dependency>
 
         <dependency>
