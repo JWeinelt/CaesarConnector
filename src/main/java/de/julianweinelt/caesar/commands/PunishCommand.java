@@ -28,9 +28,14 @@ public class PunishCommand extends BukkitCommand {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         UUID senderUUID;
+        String senderName;
         if (!(sender instanceof Player player)) {
             senderUUID = UUID.fromString("b1814b18-664e-4d4c-9a0d-2151fbc5e8ef");
-        } else senderUUID = player.getUniqueId();
+            senderName = "Admin (Console)";
+        } else{
+            senderUUID = player.getUniqueId();
+            senderName = player.getName();
+        }
 
         if (label.equalsIgnoreCase("ban")) {
             if (args.length == 0) {
@@ -40,14 +45,14 @@ public class PunishCommand extends BukkitCommand {
                 OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
 
                 PunishmentManager.instance().banPlayer(toBan);
-                CaesarLink.getInstance().banPlayer(toBan, senderUUID, "Not provided", -1);
+                CaesarLink.getInstance().banPlayer(toBan, senderUUID, senderName, "Not provided", -1);
                 sender.sendMessage("§eThe player§c " +  args[0] + "§e has been banned.");
             } else if (args.length == 2) {
                 OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
 
                 PunishmentManager.instance().banPlayer(toBan);
                 long time = parseTimeOffset(args[1]);
-                CaesarLink.getInstance().banPlayer(toBan, senderUUID, "", time);
+                CaesarLink.getInstance().banPlayer(toBan, senderUUID, senderName, "", time);
                 sender.sendMessage("§eThe player§c " +  args[0] + "§e has been banned until §c" + formatUnixTime(time) + "!");
             } else if (args.length >= 3) {
                 OfflinePlayer toBan = Bukkit.getOfflinePlayer(args[0]);
@@ -58,7 +63,7 @@ public class PunishCommand extends BukkitCommand {
                 for (int i = 2; i < args.length; i++) {
                     reason.append(args[i]).append(" ");
                 }
-                CaesarLink.getInstance().banPlayer(toBan, senderUUID, reason.toString(), time);
+                CaesarLink.getInstance().banPlayer(toBan, senderUUID, senderName, reason.toString(), time);
                 sender.sendMessage(Component.text("§eThe player§c " + args[0] + "§e has been banned until §c"
                 + formatUnixTime(time) + "§e!").append(Component.text(" §b[View reason]")
                         .hoverEvent(HoverEvent.showText(Component.text(reason.toString())))));

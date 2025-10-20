@@ -205,6 +205,10 @@ public class CaesarLink extends WebSocketClient {
                     o.addProperty("hasPlugman", Bukkit.getPluginManager().isPluginEnabled("PlugmanX"));
 
                     sendE(o.toString());
+                    break;
+                case PLAYER_BANNED:
+                    String bannedBy = root.get("bannedByName").getAsString();
+                    UUID bannedByID = UUID.fromString(root.get("bannedBy").getAsString());
             }
         }
     }
@@ -258,11 +262,12 @@ public class CaesarLink extends WebSocketClient {
         return -1;
     }
 
-    public void banPlayer(OfflinePlayer player, UUID bannedBy, String reason, long until) {
+    public void banPlayer(OfflinePlayer player, UUID bannedBy, String bannedByName, String reason, long until) {
         JsonObject o = new JsonObject();
-        o.addProperty("action", LinkAction.PLAYER_BAN.name());
-        o.addProperty("toBan", player.getUniqueId().toString());
+        o.addProperty("action", LinkAction.PLAYER_BANNED.name());
+        o.addProperty("banned", player.getUniqueId().toString());
         o.addProperty("bannedBy", bannedBy.toString());
+        o.addProperty("bannedByName", bannedByName);
         o.addProperty("reason", reason);
         o.addProperty("until", until);
         sendE(o.toString());
@@ -392,7 +397,7 @@ public class CaesarLink extends WebSocketClient {
         SERVER_INFO,
         PLAYER_KICK,
         PLAYER_WARN,
-        PLAYER_BAN,
+        PLAYER_BANNED,
         PLAYER_MUTE,
         PLAYER_UNBAN,
         PLAYER_UNMUTE,
