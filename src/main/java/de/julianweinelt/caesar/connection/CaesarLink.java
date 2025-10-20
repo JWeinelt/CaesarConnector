@@ -181,7 +181,9 @@ public class CaesarLink extends WebSocketClient {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     break;
                 case SERVER_INFO:
+                    String queryInfo = root.get("queryID").getAsString();
                     JsonObject o = new JsonObject();
+                    o.addProperty("queryID", queryInfo);
                     o.addProperty("action", LinkAction.SERVER_INFO.toString());
                     o.addProperty("server", CaesarConnector.getInstance().getName());
                     o.addProperty("serverId", LocalStorage.getInstance().getData().getServerId().toString());

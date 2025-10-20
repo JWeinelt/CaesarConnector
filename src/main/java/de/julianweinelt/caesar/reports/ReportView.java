@@ -100,12 +100,11 @@ public class ReportView implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (!(e.getWhoClicked() instanceof Player player)) return;
         if (e.getCurrentItem() == null) return;
-        Player player = (Player) e.getWhoClicked();
-        if (openMenus.getOrDefault(e.getWhoClicked().getUniqueId(), "none").equals("none")) {
+        if (openMenus.getOrDefault(player.getUniqueId(), "none").equals("none")) {
             return;
-        } else if (openMenus.getOrDefault(e.getWhoClicked().getUniqueId(), "none").equals("playerSelection")) {
+        } else if (openMenus.getOrDefault(player.getUniqueId(), "none").equals("playerSelection")) {
             e.setCancelled(true);
             if (e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)) {
                 PlayerProfile profile = ((SkullMeta) e.getCurrentItem().getItemMeta()).getPlayerProfile();
@@ -115,7 +114,7 @@ public class ReportView implements Listener {
             }
         } else {
             e.setCancelled(true);
-            ReportMenu menu = getMenu(openMenus.get(e.getWhoClicked().getUniqueId()));
+            ReportMenu menu = getMenu(openMenus.get(player.getUniqueId()));
             try {
                 ReportItem item = getItem(menu.getMenuID(), e.getRawSlot());
                 ReportItemActionType type = item.getActionType();
